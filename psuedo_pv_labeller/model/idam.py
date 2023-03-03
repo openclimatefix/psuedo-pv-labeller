@@ -120,7 +120,7 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
             output_latents: Whether to only output latent variables
 
         Returns:
-
+            Either latent irradience grid value, or grid of PV generation
         """
         for layer in self.layers:
             x = layer(x)
