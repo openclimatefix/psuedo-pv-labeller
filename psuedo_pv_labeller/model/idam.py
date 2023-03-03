@@ -1,8 +1,9 @@
+import einops
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import einops
 from huggingface_hub import PyTorchModelHubMixin
+
 
 class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
 
@@ -79,10 +80,3 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         x = einops.rearrange(x, "b c t h w -> b (c t) h w")
         x = F.relu(self.pv_meta_output(x)) # Generation can only be positive or 0, so ReLU
         return x
-
-
-
-
-
-
-
