@@ -3,6 +3,8 @@ Pseudo Irradience Labeller for generating training labels for other PV generatio
 
 ## Install
 
+You can install this package by doing `pip install pseudo-labeller`
+
 ## Usage
 
 ## Train
