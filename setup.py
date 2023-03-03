@@ -9,7 +9,7 @@ long_description = (this_directory / "README.md").read_text()
 install_requires = (this_directory / "requirements.txt").read_text().splitlines()
 
 setup(
-    name="psuedo_pv_labeller",
+    name="pseudo_labeller",
     version="0.0.1",
     license="MIT",
     description="Psuedo PV/Irradience Labeller",

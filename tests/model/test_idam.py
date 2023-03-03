@@ -1,4 +1,4 @@
-from psuedo_pv_labeller.model import PsuedoIrradienceForecastor
+from pseudo_labeller.model import PsuedoIrradienceForecastor
 import torch
 import torch.nn.functional as F
 
