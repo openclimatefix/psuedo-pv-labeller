@@ -7,6 +7,7 @@ from huggingface_hub import PyTorchModelHubMixin
 
 
 class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
+    """PseudoIrradience Model"""
     def __init__(
         self,
         input_channels: int = 3,
@@ -24,8 +25,9 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         """
         Pseudo-Irradience Forecastor/Labeller
 
-        This model is designed as a very simple 3DCNN to forecast a pseudo-irradience value for a grid.
-        This pseudo-irradience would then work as another input feature for downstream models.
+        This model is designed as a very simple 3DCNN to forecast a
+        pseudo-irradience value for a grid.This pseudo-irradience
+        would then work as another input feature for downstream models.
 
         Args:
             input_channels: Number of input channels
@@ -90,13 +92,15 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         )
 
         # Small head model to convert from latent space to PV generation for training
-        # Input is per-pixel input data, this will be reshaped to the same output steps as the latent head
+        # Input is per-pixel input data, this will be
+        # reshaped to the same output steps as the latent head
         self.pv_meta_input = nn.Conv2d(
             pv_meta_input_channels, out_channels=hidden_dim, kernel_size=(1, 1)
         )
 
         # Output is forecast steps channels, each channel is a timestep
-        # For labelling, this should be 1, forecasting the middle timestep, for forecasting, the number of steps
+        # For labelling, this should be 1, forecasting the middle
+        # timestep, for forecasting, the number of steps
         # This is done by putting the meta inputs to each timestep
         self.pv_meta_output = nn.Conv2d(
             in_channels=(output_steps * output_channels) + hidden_dim,
