@@ -1,22 +1,20 @@
-name: satip
+name: psuedo-irradience
 channels:
+  - defaults
   - conda-forge
+  - pytorch
+  - nvidia
 dependencies:
-  - python>=3.9
-  - pip
-  - numpy==1.23.0
-  - pandas>=1.1.4
-  - requests
-  - fsspec
-  - satpy==0.36.0
-  - zarr
+  - python==3.10
   - xarray
-  - bottleneck
-  - tqdm
-  - matplotlib
+  - zarr
+  - numcodecs
+  - pytorch
+  - torchvision
+  - torchdata
   - cartopy
+  - rioxarray
+  - pytorch-cuda==11.6
 pip:
-  # The conda version of imagecodecs doesn't currently include libjxl,
-  # which is required for JPEG-XL compression. So we must install using pip:
-  - imagecodecs
-  - eumdac
+  - huggingface_hub
+  - einops

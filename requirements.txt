@@ -1,1 +1,3 @@
 torch
+einops
+huggingface_hub

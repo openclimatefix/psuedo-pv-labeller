@@ -12,7 +12,7 @@ setup(
     name="psuedo_pv_labeller",
     version="0.0.1",
     license="MIT",
-    description="Psuedo PV Labeller ",
+    description="Psuedo PV/Irradience Labeller",
     author="Jacob Bieker",
     author_email="info@openclimatefix.org",
     company="Open Climate Fix Ltd",
