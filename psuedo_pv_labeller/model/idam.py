@@ -11,7 +11,6 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
                 input_channels: int = 3,
                 input_size: int = 256,
                 input_steps: int = 12,
-                output_size: int = 64,
                 output_channels: int = 8,
                 conv3d_channels: int = 256,
                 hidden_dim: int = 8,
@@ -29,7 +28,6 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         input_size = self.config.get("input_size", 256)
         input_steps = self.config.get("input_steps", 12)
         input_channels = self.config.get("input_channels", 3)
-        output_size = self.config.get("output_size", 64)
         output_channels = self.config.get("output_channels", 8)
         conv3d_channels = self.config.get("conv3d_channels", 256)
         kernel_size = self.config.get("kernel_size", 3)
