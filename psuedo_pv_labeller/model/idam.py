@@ -60,10 +60,7 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         # Map to output latent variables, per timestep
 
         # Map the output to the latent variables
-        self.latent_head = nn.Conv3d(
-            conv3d_channels, out_channels=output_channels, kernel_size=(1, 1, 1), padding="same"
-        )
-        # Latent head should be number of output steps + latent channels, can be reworked later
+        # Latent head should be number of output steps + latent channels
         self.latent_head = nn.Conv2d(
             in_channels=input_steps * conv3d_channels,
             out_channels=output_steps * output_channels,
