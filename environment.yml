@@ -15,3 +15,6 @@ dependencies:
   - cartopy
   - rioxarray
   - pytorch-cuda==11.6
+pip:
+  - huggingface_hub
+  - einops
