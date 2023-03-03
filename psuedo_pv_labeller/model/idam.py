@@ -64,6 +64,14 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
             conv3d_channels, out_channels=output_channels, kernel_size=(1, 1, 1), padding="same"
         )
 
+        self.latent_output = nn.Conv2d(
+            in_channels=input_steps * output_channels,
+            out_channels=output_steps,
+            kernel_size=(1, 1),
+            padding="same",
+        )
+
+
         # Small head model to convert from latent space to PV generation for training
         # Input is per-pixel input data, this will be reshaped to the same output steps as the latent head
         self.pv_meta_input = nn.Conv2d(
@@ -85,7 +93,8 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
             x = layer(x)
         x = self.latent_head(x)
         if output_latents:
-            return x
+            x = einops.rearrange(x, "b c t h w -> b (c t) h w")
+            return self.latent_output(x)
         pv_meta = self.pv_meta_input(pv_meta)
         # Reshape to fit into 3DCNN
         pv_meta = einops.repeat(pv_meta, "b c h w -> b c t h w", t=self.input_steps)
