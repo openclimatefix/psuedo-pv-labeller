@@ -61,7 +61,7 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         # Output is forecast steps channels, each channel is a timestep
         # For labelling, this should be 1, forecasting the middle timestep, for forecasting, the number of steps
         # This is done by putting the meta inputs to each timestep
-        self.pv_meta_output = nn.Conv2d(in_channels=output_channels+hidden_dim, out_channels=output_steps, kernel_size=(1,1), padding='same')
+        self.pv_meta_output = nn.Conv2d(in_channels=input_steps*(output_channels+hidden_dim), out_channels=output_steps, kernel_size=(1,1), padding='same')
 
     def forward(self, x: torch.Tensor, pv_meta: torch.Tensor = None,  output_latents: bool = True):
         for layer in self.layers:
