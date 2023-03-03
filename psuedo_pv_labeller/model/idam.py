@@ -64,8 +64,12 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
             conv3d_channels, out_channels=output_channels, kernel_size=(1, 1, 1), padding="same"
         )
         # Latent head should be number of output steps + latent channels, can be reworked later
-        self.latent_head = nn.Conv2d(in_channels=input_steps*conv3d_channels, out_channels=output_steps*output_channels, kernel_size=(1,1), padding='same')
-
+        self.latent_head = nn.Conv2d(
+            in_channels=input_steps * conv3d_channels,
+            out_channels=output_steps * output_channels,
+            kernel_size=(1, 1),
+            padding="same",
+        )
 
         # Small head model to convert from latent space to PV generation for training
         # Input is per-pixel input data, this will be reshaped to the same output steps as the latent head
