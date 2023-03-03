@@ -20,6 +20,26 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         pv_meta_input_channels: int = 2,
         **kwargs
     ):
+        """
+        Pseudo-Irradience Forecastor/Labeller
+
+        This model is designed as a very simple 3DCNN to forecast a pseudo-irradience value for a grid.
+        This pseudo-irradience would then work as another input feature for downstream models.
+
+        Args:
+            input_channels: Number of input channels
+            input_size: Input size in pixels
+            input_steps: Number of input steps
+            output_channels: Number of latent output channels, this is the pseudo-irradiance vector
+            conv3d_channels: Number of channels for the Conv3D layers
+            hidden_dim: Number of channels for the PV Metadata layer
+            kernel_size: Kernel size for the Conv3D layers
+            num_layers: Number of Conv3D layers
+            output_steps: Number of output steps for forecasting, 1 for labelling
+            pv_meta_input_channels: Number of input channels for the metadata
+                (usually 2, for tilt and orientation)
+            **kwargs: Kwargs, like config
+        """
         super().__init__()
         config = locals()
         config.pop("self")
