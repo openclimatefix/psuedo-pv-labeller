@@ -8,6 +8,7 @@ from huggingface_hub import PyTorchModelHubMixin
 
 class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
     """PseudoIrradience Model"""
+
     def __init__(
         self,
         input_channels: int = 3,
