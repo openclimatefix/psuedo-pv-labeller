@@ -19,4 +19,3 @@ def test_irradience_forecastor_backward():
     loss = F.mse_loss(output_tensor, target_tensor)
     assert not any(torch.isnan(loss))
     loss.backward()
-
