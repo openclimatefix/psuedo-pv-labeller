@@ -63,13 +63,8 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         self.latent_head = nn.Conv3d(
             conv3d_channels, out_channels=output_channels, kernel_size=(1, 1, 1), padding="same"
         )
-
-        self.latent_output = nn.Conv2d(
-            in_channels=input_steps * output_channels,
-            out_channels=output_steps,
-            kernel_size=(1, 1),
-            padding="same",
-        )
+        # Latent head should be number of output steps + latent channels, can be reworked later
+        self.latent_head = nn.Conv2d(in_channels=input_steps*conv3d_channels, out_channels=output_steps*output_channels, kernel_size=(1,1), padding='same')
 
 
         # Small head model to convert from latent space to PV generation for training
@@ -82,24 +77,35 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         # For labelling, this should be 1, forecasting the middle timestep, for forecasting, the number of steps
         # This is done by putting the meta inputs to each timestep
         self.pv_meta_output = nn.Conv2d(
-            in_channels=input_steps * (output_channels + hidden_dim),
+            in_channels=(output_steps * output_channels) + hidden_dim,
             out_channels=output_steps,
             kernel_size=(1, 1),
             padding="same",
         )
 
     def forward(self, x: torch.Tensor, pv_meta: torch.Tensor = None, output_latents: bool = True):
+        """
+        Compute either just the latent psuedo irradience, or the PV generation
+
+        Args:
+            x: Input data tensor, of shape [B, C, T, H, W]
+            pv_meta: Input PV Metadata tensor, optional, [B, C, H, W]
+            output_latents: Whether to only output latent variables
+
+        Returns:
+
+        """
         for layer in self.layers:
             x = layer(x)
+        x = einops.rearrange(x, "b c t h w -> b (c t) h w")
         x = self.latent_head(x)
         if output_latents:
-            x = einops.rearrange(x, "b c t h w -> b (c t) h w")
-            return self.latent_output(x)
+            # Rearrange back to timeseries of latent variables
+            x = einops.rearrange(x, "b (c t) h w -> b c t h w", c=self.output_channels)
+            return x
         pv_meta = self.pv_meta_input(pv_meta)
         # Reshape to fit into 3DCNN
-        pv_meta = einops.repeat(pv_meta, "b c h w -> b c t h w", t=self.input_steps)
         x = torch.cat([x, pv_meta], dim=1)
         # Get pv_meta_output
-        x = einops.rearrange(x, "b c t h w -> b (c t) h w")
         x = F.relu(self.pv_meta_output(x))  # Generation can only be positive or 0, so ReLU
         return x
