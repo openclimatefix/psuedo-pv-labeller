@@ -7,7 +7,7 @@ from huggingface_hub import PyTorchModelHubMixin
 
 class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
 
-    def __int__(self,
+    def __init__(self,
                 input_channels: int = 3,
                 input_size: int = 256,
                 input_steps: int = 12,
@@ -38,12 +38,11 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         self.input_steps = input_steps
         self.hidden_dim = hidden_dim
         self.output_channels = output_channels
-
-        self.input_conv = nn.Conv3d(in_channels=input_channels,
+        self.layers = nn.ModuleList()
+        self.layers.append(nn.Conv3d(in_channels=input_channels,
                                out_channels=conv3d_channels,
                                kernel_size=(kernel_size,kernel_size,kernel_size),
-                               padding='same',)
-        self.layers = nn.ModuleList()
+                               padding='same',))
         for i in range(0, num_layers):
             self.layers.append(nn.Conv3d(in_channels=conv3d_channels,
                                     out_channels=conv3d_channels,
@@ -65,8 +64,8 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         self.pv_meta_output = nn.Conv2d(in_channels=output_channels+hidden_dim, out_channels=output_steps, kernel_size=(1,1), padding='same')
 
     def forward(self, x: torch.Tensor, pv_meta: torch.Tensor = None,  output_latents: bool = True):
-        x = self.input_conv(x)
-        x = self.layers(x)
+        for layer in self.layers:
+            x = layer(x)
         x = self.latent_head(x)
         if output_latents:
             return x
