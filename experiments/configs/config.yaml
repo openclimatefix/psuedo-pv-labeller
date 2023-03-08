@@ -6,13 +6,13 @@ model:
   input_steps: 12
   latent_channels: 8
   conv3d_channels: 256
-  hidden_dim: 256
+  hidden_dim: 64
   kernel_size: 3
   num_layers: 4
   output_steps: 12
   pv_meta_input_channels: 2
 dataloader:
-  config: "datapipe/forecastor.yaml"
+  config: "configs/datapipe/forecastor.yaml"
   sun: true
   nwp: true
   sat: true

@@ -9,7 +9,7 @@ try:
 except RuntimeError:
     pass
 import datetime
-
+import einops
 import hydra
 import pytorch_lightning as pl
 import torch.nn.functional as F
@@ -57,6 +57,9 @@ class LitModel(pl.LightningModule):
         y_hat = self(x, meta)
 
         mask = meta > 0.0
+
+        # Expand to match the ground truth shape
+        mask = einops.repeat(mask, "b c h w -> b c t h w", t=y.shape[2])
 
         # calculate mse, mae
         mse_loss = F.mse_loss(y_hat[mask], y[mask])
