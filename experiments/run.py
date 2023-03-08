@@ -4,7 +4,6 @@ import torch
 try:
     torch.multiprocessing.set_start_method("spawn")
     import torch.multiprocessing as mp
-
     mp.set_start_method("spawn")
 except RuntimeError:
     pass
@@ -43,23 +42,20 @@ class LitModel(pl.LightningModule):
         self.config = self.model.config
         self.save_hyperparameters()
 
-    def forward(self, x):
-        return self.model(x)
+    def forward(self, x, meta):
+        return self.model(x, meta, output_latents=False)
 
     def training_step(self, batch, batch_idx):
         tag = "train"
-        x, y = batch
-        y = y[0]
+        x, meta, y = batch
         x = torch.nan_to_num(input=x, posinf=1.0, neginf=0.0)
         y = torch.nan_to_num(input=y, posinf=1.0, neginf=0.0)
         x = x.half()
         y = y.half()
-        y_hat = self(x)
+        meta = meta.half()
+        y_hat = self(x, meta)
 
-        out_mask = y > 0.0
-        # Sum across timesteps
-        out_mask = torch.sum(out_mask, dim=1)  # Output from training is [B, T, H, W]
-        mask = out_mask > 0.0
+        mask = meta > 0.0
 
         # calculate mse, mae
         mse_loss = F.mse_loss(y_hat[mask], y[mask])
