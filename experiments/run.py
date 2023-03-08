@@ -44,7 +44,7 @@ class LitModel(pl.LightningModule):
         self.save_hyperparameters()
 
     def forward(self, x):
-        return F.relu(self.model(x))
+        return self.model(x)
 
     def training_step(self, batch, batch_idx):
         tag = "train"
@@ -81,7 +81,7 @@ class LitModel(pl.LightningModule):
 def create_train_dataloader(config: DictConfig):
     return pseudo_irradiance_datapipe(
         config.config,
-        start_time=datetime.datetime(2014, 1, 1),
+        start_time=datetime.datetime(2008, 1, 1),
         end_time=datetime.datetime(2020, 12, 31),
         use_sun=config.sun,
         use_nwp=config.nwp,
@@ -114,8 +114,8 @@ def create_val_dataloader(config: DictConfig):
 def experiment(cfg: DictConfig) -> None:
     print(OmegaConf.to_yaml(cfg))
     model = LitModel(cfg.model)
-    train_dataloader = create_train_dataloader(cfg.train_dataloader)
-    val_dataloader = create_val_dataloader(cfg.val_dataloader)
+    train_dataloader = create_train_dataloader(cfg.dataloader)
+    val_dataloader = create_val_dataloader(cfg.dataloader)
 
     model_checkpoint = ModelCheckpoint(
         every_n_train_steps=100,
