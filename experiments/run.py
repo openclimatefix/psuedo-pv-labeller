@@ -58,7 +58,7 @@ class LitModel(pl.LightningModule):
 
         out_mask = y > 0.0
         # Sum across timesteps
-        out_mask = torch.sum(out_mask, dim=1) # Output from training is [B, T, H, W]
+        out_mask = torch.sum(out_mask, dim=1)  # Output from training is [B, T, H, W]
         mask = out_mask > 0.0
 
         # calculate mse, mae
