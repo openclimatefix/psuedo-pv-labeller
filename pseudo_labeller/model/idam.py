@@ -21,7 +21,7 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         num_layers: int = 1,
         output_steps: int = 1,
         pv_meta_input_channels: int = 2,
-        **kwargs
+        **kwargs,
     ):
         """
         Pseudo-Irradience Forecastor/Labeller

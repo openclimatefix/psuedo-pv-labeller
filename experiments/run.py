@@ -2,26 +2,28 @@
 import torch
 
 try:
-    torch.multiprocessing.set_start_method('spawn')
+    torch.multiprocessing.set_start_method("spawn")
     import torch.multiprocessing as mp
 
-    mp.set_start_method('spawn')
+    mp.set_start_method("spawn")
 except RuntimeError:
     pass
-import hydra
-from omegaconf import DictConfig, OmegaConf
-import pytorch_lightning as pl
-from pytorch_lightning.callbacks import ModelCheckpoint
-from ocf_datapipes.training.pseudo_irradience import pseudo_irradiance_datapipe
-from pseudo_labeller.model import PsuedoIrradienceForecastor
-import torch.nn.functional as F
 import datetime
+
+import hydra
+import pytorch_lightning as pl
+import torch.nn.functional as F
+from ocf_datapipes.training.pseudo_irradience import pseudo_irradiance_datapipe
+from omegaconf import DictConfig, OmegaConf
+from pytorch_lightning.callbacks import ModelCheckpoint
+
+from pseudo_labeller.model import PsuedoIrradienceForecastor
 
 
 class LitModel(pl.LightningModule):
     def __init__(
-            self,
-            config: DictConfig,
+        self,
+        config: DictConfig,
     ):
         super().__init__()
         self.forecast_steps = config.forecast_steps
@@ -74,6 +76,7 @@ class LitModel(pl.LightningModule):
     def configure_optimizers(self):
         return torch.optim.AdamW(self.parameters(), lr=self.learning_rate)
 
+
 def create_train_dataloader(config: DictConfig):
     return pseudo_irradiance_datapipe(
         config.config,
@@ -86,7 +89,7 @@ def create_train_dataloader(config: DictConfig):
         use_pv=True,
         use_topo=config.topo,
         size=config.size,
-        use_future=config.use_future
+        use_future=config.use_future,
     )
 
 
@@ -102,7 +105,7 @@ def create_val_dataloader(config: DictConfig):
         use_pv=True,
         use_topo=config.topo,
         size=config.size,
-        use_future=config.use_future
+        use_future=config.use_future,
     )
 
 
@@ -137,7 +140,7 @@ def experiment(cfg: DictConfig) -> None:
         # limit_train_batches=500 * args.accumulate,
         accumulate_grad_batches=cfg.accumulate,
         callbacks=[model_checkpoint],
-        logger=tb_logger
+        logger=tb_logger,
     )
     trainer.fit(model, train_dataloaders=train_dataloader, val_dataloaders=val_dataloader)
 
