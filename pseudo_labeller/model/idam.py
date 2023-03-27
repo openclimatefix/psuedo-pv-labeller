@@ -21,7 +21,7 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         num_layers: int = 1,
         output_steps: int = 1,
         pv_meta_input_channels: int = 2,
-        **kwargs
+        **kwargs,
     ):
         """
         Pseudo-Irradience Forecastor/Labeller
@@ -130,8 +130,9 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
             # Rearrange back to timeseries of latent variables
             x = einops.rearrange(x, "b (c t) h w -> b c t h w", c=self.output_channels)
             return x
+        if pv_meta is None:
+            raise ValueError(f"'pv_meta' cannot be none if {output_latents=}")
         pv_meta = self.pv_meta_input(pv_meta)
-        # Reshape to fit into 3DCNN
         x = torch.cat([x, pv_meta], dim=1)
         # Get pv_meta_output
         x = F.relu(self.pv_meta_output(x))  # Generation can only be positive or 0, so ReLU
