@@ -128,6 +128,7 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         """
         for layer in self.layers:
             x = layer(x)
+        x = F.relu(x)
         x = einops.rearrange(x, "b c t h w -> b (c t) h w")
         x = self.latent_head(x)
         if output_latents:
@@ -136,6 +137,7 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
             return x
         pv_meta = self.pv_meta_input(pv_meta)
         pv_meta = self.batch_norm_meta(pv_meta)
+        pv_meta = F.relu(pv_meta)
         # Reshape to fit into 3DCNN
         x = torch.cat([x, pv_meta], dim=1)
         # Get pv_meta_output
