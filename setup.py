@@ -10,7 +10,7 @@ install_requires = (this_directory / "requirements.txt").read_text().splitlines(
 
 setup(
     name="pseudo_labeller",
-    version="0.0.7",
+    version="0.0.8",
     license="MIT",
     description="Psuedo PV/Irradience Labeller",
     author="Jacob Bieker",
