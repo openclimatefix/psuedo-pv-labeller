@@ -80,8 +80,8 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
                     padding="same",
                 )
             )
-            if i % 2 == 0:
-                self.layers.append(nn.BatchNorm3d(conv3d_channels))
+            #if i % 2 == 0:
+            #    self.layers.append(nn.BatchNorm3d(conv3d_channels))
 
         # Map to output latent variables, per timestep
 
@@ -100,13 +100,13 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         self.pv_meta_input = nn.Conv2d(
             pv_meta_input_channels, out_channels=hidden_dim, kernel_size=(1, 1)
         )
-        self.batch_norm_meta = nn.BatchNorm2d(hidden_dim)
+        self.batch_norm_meta = nn.Identity()
 
         # Output is forecast steps channels, each channel is a timestep
         # For labelling, this should be 1, forecasting the middle
         # timestep, for forecasting, the number of steps
         # This is done by putting the meta inputs to each timestep
-        self.batch_norm_output_meta = nn.BatchNorm2d((output_steps * output_channels) + hidden_dim)
+        self.batch_norm_output_meta = nn.Identity()
         self.pv_meta_output = nn.Conv2d(
             in_channels=(output_steps * output_channels) + hidden_dim,
             out_channels=output_steps,
