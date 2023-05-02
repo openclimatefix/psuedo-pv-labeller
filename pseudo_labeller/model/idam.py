@@ -141,5 +141,7 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         # Reshape to fit into 3DCNN
         x = torch.cat([x, pv_meta], dim=1)
         # Get pv_meta_output
-        x = F.relu(self.pv_meta_output(self.batch_norm_output_meta(x)))  # Generation can only be positive or 0, so ReLU
+        x = F.relu(
+            self.pv_meta_output(self.batch_norm_output_meta(x))
+        )  # Generation can only be positive or 0, so ReLU
         return x
