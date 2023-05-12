@@ -80,8 +80,6 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
                     padding="same",
                 )
             )
-            #if i % 2 == 0:
-            #    self.layers.append(nn.BatchNorm3d(conv3d_channels))
 
         # Map to output latent variables, per timestep
 
@@ -97,20 +95,18 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         # Small head model to convert from latent space to PV generation for training
         # Input is per-pixel input data, this will be
         # reshaped to the same output steps as the latent head
-        self.pv_meta_input = nn.Conv2d(
-            pv_meta_input_channels, out_channels=hidden_dim, kernel_size=(1, 1)
+        self.pv_meta_input = nn.Conv1d(
+            pv_meta_input_channels, out_channels=hidden_dim, kernel_size=1
         )
-        self.batch_norm_meta = nn.Identity()
 
         # Output is forecast steps channels, each channel is a timestep
         # For labelling, this should be 1, forecasting the middle
         # timestep, for forecasting, the number of steps
         # This is done by putting the meta inputs to each timestep
-        self.batch_norm_output_meta = nn.Identity()
-        self.pv_meta_output = nn.Conv2d(
+        self.pv_meta_output = nn.Conv1d(
             in_channels=(output_steps * output_channels) + hidden_dim,
             out_channels=output_steps,
-            kernel_size=(1, 1),
+            kernel_size=1,
             padding="same",
         )
 
@@ -136,12 +132,13 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
             x = einops.rearrange(x, "b (c t) h w -> b c t h w", c=self.output_channels)
             return x
         pv_meta = self.pv_meta_input(pv_meta)
-        pv_meta = self.batch_norm_meta(pv_meta)
         pv_meta = F.relu(pv_meta)
+        # Scale down to 1 size
+        x = F.adaptive_avg_pool2d(x, (1, 1))
         # Reshape to fit into 3DCNN
         x = torch.cat([x, pv_meta], dim=1)
         # Get pv_meta_output
         x = F.relu(
-            self.pv_meta_output(self.batch_norm_output_meta(x))
+            self.pv_meta_output(x)
         )  # Generation can only be positive or 0, so ReLU
         return x
