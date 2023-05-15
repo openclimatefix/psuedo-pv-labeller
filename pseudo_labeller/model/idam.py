@@ -135,6 +135,7 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         pv_meta = F.relu(pv_meta)
         # Scale down to 1 size
         x = F.adaptive_avg_pool2d(x, (1, 1))
+        x = torch.squeeze(x, dim=-1)
         # Reshape to fit into 3DCNN
         x = torch.cat([x, pv_meta], dim=1)
         # Get pv_meta_output
