@@ -68,7 +68,7 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
                 in_channels=input_channels,
                 out_channels=conv3d_channels,
                 kernel_size=(kernel_size, kernel_size, kernel_size),
-                #padding="same",
+                padding=(1,0,0),
             )
         )
         for i in range(0, num_layers):
@@ -77,7 +77,7 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
                     in_channels=conv3d_channels,
                     out_channels=conv3d_channels,
                     kernel_size=(kernel_size, kernel_size, kernel_size),
-                    #padding="same",
+                    padding=(1,0,0),
                 )
             )
 
