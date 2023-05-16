@@ -95,19 +95,21 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         # Small head model to convert from latent space to PV generation for training
         # Input is per-pixel input data, this will be
         # reshaped to the same output steps as the latent head
-        self.pv_meta_input = nn.Conv1d(
-            pv_meta_input_channels, out_channels=hidden_dim, kernel_size=1
+        self.pv_meta_input = nn.Linear(
+            pv_meta_input_channels, out_features=hidden_dim
         )
 
         # Output is forecast steps channels, each channel is a timestep
         # For labelling, this should be 1, forecasting the middle
         # timestep, for forecasting, the number of steps
         # This is done by putting the meta inputs to each timestep
-        self.pv_meta_output = nn.Conv1d(
-            in_channels=(output_steps * output_channels) + hidden_dim,
-            out_channels=output_steps,
-            kernel_size=1,
-            padding="same",
+        self.pv_meta_output = nn.Linear(
+            in_features=(output_steps * output_channels) + hidden_dim,
+            out_features=hidden_dim,
+        )
+        self.pv_meta_output2 = nn.Linear(
+            in_features=hidden_dim,
+            out_features=output_steps,
         )
 
     def forward(self, x: torch.Tensor, pv_meta: torch.Tensor = None, output_latents: bool = True):
@@ -139,7 +141,8 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         # Reshape to fit into 3DCNN
         x = torch.cat([x, pv_meta], dim=1)
         # Get pv_meta_output
+        x = self.pv_meta_output(x)
         x = F.relu(
-            self.pv_meta_output(x)
+            self.pv_meta_output2(x)
         )  # Generation can only be positive or 0, so ReLU
         return x
