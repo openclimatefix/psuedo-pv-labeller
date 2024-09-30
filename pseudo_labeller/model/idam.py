@@ -1,4 +1,5 @@
 """Psuedo-irradience forecastor/labeller"""
+
 import einops
 import torch
 import torch.nn as nn
@@ -68,7 +69,7 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
                 in_channels=input_channels,
                 out_channels=conv3d_channels,
                 kernel_size=(kernel_size, kernel_size, kernel_size),
-                padding=(1,0,0),
+                padding=(1, 0, 0),
             )
         )
         for i in range(0, num_layers):
@@ -77,7 +78,7 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
                     in_channels=conv3d_channels,
                     out_channels=conv3d_channels,
                     kernel_size=(kernel_size, kernel_size, kernel_size),
-                    padding=(1,0,0),
+                    padding=(1, 0, 0),
                 )
             )
 
@@ -95,9 +96,7 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         # Small head model to convert from latent space to PV generation for training
         # Input is per-pixel input data, this will be
         # reshaped to the same output steps as the latent head
-        self.pv_meta_input = nn.Linear(
-            pv_meta_input_channels, out_features=hidden_dim
-        )
+        self.pv_meta_input = nn.Linear(pv_meta_input_channels, out_features=hidden_dim)
 
         # Output is forecast steps channels, each channel is a timestep
         # For labelling, this should be 1, forecasting the middle
@@ -142,7 +141,5 @@ class PsuedoIrradienceForecastor(nn.Module, PyTorchModelHubMixin):
         x = torch.cat([x, pv_meta], dim=1)
         # Get pv_meta_output
         x = self.pv_meta_output(x)
-        x = F.relu(
-            self.pv_meta_output2(x)
-        )  # Generation can only be positive or 0, so ReLU
+        x = F.relu(self.pv_meta_output2(x))  # Generation can only be positive or 0, so ReLU
         return x
